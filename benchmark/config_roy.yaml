@@ -1,18 +1,18 @@
 run: # Configurations for a specific run
   random_seed: 0530 # Integer number of specifying random seed
-  log_dir: benchmark # String for indicating where to save all the information, including models and computed signals. We can reuse the models saved in the same log_dir.
+  log_dir: cif100res1 # String for indicating where to save all the information, including models and computed signals. We can reuse the models saved in the same log_dir.
   time_log: True # Indicate whether to log the time for each step
 
 audit: # Configurations for auditing
   privacy_game: privacy_loss_model # Indicate the privacy game from privacy_loss_model, avg_privacy_loss_training_algo, privacy_loss_sample
-  report_log: benchmark # String that indicates the folder where we save the and auditing report.
+  report_log: cif100res1 # String that indicates the folder where we save the and auditing report.
   device: cuda:0
   augmentation: None # Indicate whether to use augmentation for the query points
   audit_batch_size: 1000
 
 train: # Configuration for training
   type: pytorch # Training framework (we only support pytorch now).
-  model_name: alexnet # String for indicating the model type. We support CNN. More model types can be added in model.py.
+  model_name: wrn28-1 # String for indicating the model type. We support CNN. More model types can be added in model.py.
   device: cuda:0 # String for indicating the device we want to use for training models.
   num_in_models: 8 # Integer number that indicates how many target models trained on idx
   num_out_models: 8 # Integer number that indicates how many target models not trained on idx
@@ -21,7 +21,7 @@ train: # Configuration for training
   learning_rate: 0.001
   weight_decay: 0.0005
   batch_size: 128
-  epochs: 50
+  epochs: 30
   test_batch_size: 250
   num_test_size: 1000
 

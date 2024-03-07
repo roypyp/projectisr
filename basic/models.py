@@ -2,6 +2,7 @@
 import torch
 import torch.nn.functional as F
 import torchvision
+from torchvision import models
 from torch import nn
 from wide_resnet import WideResNet
 
@@ -52,6 +53,27 @@ class CNN(nn.Module):
         outputs = self.fc3(inputs)
         return outputs
 
+class CNN_100(nn.Module):
+    """Simple CNN for CIFAR100 dataset."""
+
+    def __init__(self, num_classes=100):  # Adjust num_classes to 100 for CIFAR100
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)  # Ensure this matches the final feature map size
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, num_classes)
+
+    def forward(self, x):
+        """Forward pass of the model."""
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1)  # flatten all dimensions except the batch dimension
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
 class AlexNet(nn.Module):
     """AlexNet model for CIFAR10 dataset."""
@@ -91,6 +113,20 @@ class AlexNet(nn.Module):
         return outputs
 
 
+class ResNet18_CIFAR100(nn.Module):
+    """ResNet-18 model for CIFAR100 dataset."""
+
+    def __init__(self, num_classes=100):
+        super(ResNet18_CIFAR100, self)._init_()
+        # Load a pre-trained ResNet-18 model
+        self.model = models.resnet18(pretrained=True)
+        # Replace the fc layer with a new one for CIFAR-100 (100 classes)
+        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x):
+        """Forward pass of the model."""
+        return self.model(x)    
+
 def get_model(model_type: str, dataset_name: str):
     """Instantiate the model based on the model_type
 
@@ -104,6 +140,8 @@ def get_model(model_type: str, dataset_name: str):
     in_shape = INPUT_OUTPUT_SHAPE[dataset_name][0]
     if model_type == "CNN":
         return CNN(num_classes=num_classes)
+    elif model_type == "CNN-100":
+        return CNN_100(num_classes=num_classes)
     elif model_type == "alexnet":
         return AlexNet(num_classes=num_classes)
     elif model_type == "wrn28-1":
