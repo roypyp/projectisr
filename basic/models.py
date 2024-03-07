@@ -117,7 +117,7 @@ class ResNet18_CIFAR100(nn.Module):
     """ResNet-18 model for CIFAR100 dataset."""
 
     def __init__(self, num_classes=100):
-        super(ResNet18_CIFAR100, self)._init_()
+        super(ResNet18_CIFAR100, self).__init__()
         # Load a pre-trained ResNet-18 model
         self.model = models.resnet18(pretrained=True)
         # Replace the fc layer with a new one for CIFAR-100 (100 classes)
@@ -126,6 +126,32 @@ class ResNet18_CIFAR100(nn.Module):
     def forward(self, x):
         """Forward pass of the model."""
         return self.model(x)    
+
+
+class ResNet101_CIFAR100(nn.Module):
+    """ResNet-101 model for CIFAR100 dataset."""
+
+    def __init__(self, num_classes=100):
+        super(ResNet101_CIFAR100, self).__init__()
+        # Load a pre-trained ResNet-101 model
+        self.model = models.resnet101(pretrained=True)
+        # Replace the fc layer with a new one for CIFAR-100 (100 classes)
+        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x):
+        """Forward pass of the model."""
+        return self.model(x)
+class ResNet50_CIFAR100(nn.Module):
+    def __init__(self, num_classes=100):
+        super(ResNet50_CIFAR100, self).__init__()
+        # Load a pre-trained ResNet-50 model
+        self.model = models.resnet50(pretrained=True)
+        # Replace the last fully connected layer
+        # Parameters of newly constructed modules have requires_grad=True by default
+        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x):
+        return self.model(x)
 
 def get_model(model_type: str, dataset_name: str):
     """Instantiate the model based on the model_type
@@ -144,6 +170,8 @@ def get_model(model_type: str, dataset_name: str):
         return CNN_100(num_classes=num_classes)
     elif model_type == "alexnet":
         return AlexNet(num_classes=num_classes)
+    elif model_type == "ResNet18":
+        return ResNet50_CIFAR100(num_classes=num_classes)
     elif model_type == "wrn28-1":
         return WideResNet(nin=in_shape, nclass=num_classes, depth=28, width=1)
     elif model_type == "wrn28-2":
